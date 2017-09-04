@@ -2,8 +2,8 @@
 
 require 'spec_helper'
 
-RSpec.describe Clockwork::Mocks do
+RSpec.describe ClockworkMocks do
   it 'has a version number' do
-    expect(ClockworkMocks::Mocks::VERSION).not_to be nil
+    expect(ClockworkMocks::VERSION).not_to be nil
   end
 end
