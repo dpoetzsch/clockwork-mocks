@@ -1,7 +1,7 @@
 # ClockworkMocks
 
+This gem provides **helpers for integration testing with clockwork**.
 [Clockwork](https://github.com/Rykian/clockwork) provides a cron-like utility for ruby.
-This gem provides helpers for integration testing with clockwork.
 It works especially well in combination with [timecop](https://github.com/travisjeffery/timecop).
 
 ## Installation
