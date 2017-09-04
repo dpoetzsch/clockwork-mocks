@@ -14,11 +14,19 @@ RSpec.describe ClockworkMocks::Scheduler do
   end
 
   describe '.init_rspec' do
-    let(:init_block) { -> { Clockwork.every(1.day, 'some task') { task1.call } } }
-    subject { described_class.init_rspec(->(a) { allow a }, ->(a) { receive a }) { init_block.call } }
+    subject do
+      described_class.init_rspec(->(a) { allow a }, ->(a) { receive a }) do
+        Clockwork.handler { |job| job }
+        Clockwork.every(1.day, 'some task') { task1.call }
+      end
+    end
 
     it 'automagically adds the task' do
       expect(subject.tasks).not_to be_empty
+    end
+
+    it 'automagically adds the handler' do
+      expect(subject.handler).to be_present
     end
   end
 

@@ -16,8 +16,12 @@ module ClockworkMocks
       @due = calc_due
     end
 
-    def perform
-      @block.call
+    def perform(handler = nil)
+      if @block
+        @block.call
+      elsif handler
+        handler.call(@name, Time.now)
+      end
       @due = calc_due
     end
 

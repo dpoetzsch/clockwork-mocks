@@ -113,7 +113,7 @@ This project is intended to be a safe, welcoming space for collaboration, and co
 ### TODO
 
 [x] Basic support for tasks with block
-[ ] Support for `Clockwork.handler`
+[x] Support for `Clockwork.handler`
 
 ## License
 

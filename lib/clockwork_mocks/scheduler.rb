@@ -11,6 +11,10 @@ module ClockworkMocks
     def self.init_rspec(allow, receive, clock_file = nil)
       scheduler = Scheduler.new
 
+      allow.call(Clockwork).to receive.call(:handler) do |&block|
+        scheduler.handler(&block)
+      end
+
       allow.call(Clockwork).to receive.call(:every) do |interval, name, hash, &block|
         scheduler.every interval, name, hash, &block
       end
@@ -35,12 +39,17 @@ module ClockworkMocks
 
         break if t.nil? || t.due > Time.now
 
-        t.perform
+        t.perform(@handler)
       end
     end
 
     def reset!
       @tasks.each(&:reset!)
+    end
+
+    def handler(&block)
+      return @handler unless block_given?
+      @handler = block
     end
 
     def every(interval, name, hash = {}, &block)

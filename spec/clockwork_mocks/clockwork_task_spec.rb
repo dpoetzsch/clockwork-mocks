@@ -13,14 +13,36 @@ RSpec.describe ClockworkMocks::ClockworkTask do
   before { allow(block).to receive(:call) }
 
   describe '#perform' do
-    before { subject.perform }
+    context 'without handler' do
+      before { subject.perform }
 
-    it 'calls the passed proc' do
-      expect(block).to have_received(:call)
+      it 'calls the passed proc' do
+        expect(block).to have_received(:call)
+      end
+
+      it 'recalculates due date' do
+        expect(subject.due).to eq(2.days.from_now)
+      end
     end
 
-    it 'recalculates due date' do
-      expect(subject.due).to eq(2.days.from_now)
+    context 'with handler' do
+      let(:handler) { instance_double(Proc) }
+      before { allow(handler).to receive(:call) }
+      before { subject.perform(->(j, t) { handler.call(j, t) }) }
+
+      context 'with individual proc' do
+        it 'calls the individual proc' do
+          expect(block).to have_received(:call)
+        end
+      end
+
+      context 'without individual proc' do
+        let(:block) { nil }
+
+        it 'calls the handler' do
+          expect(handler).to have_received(:call)
+        end
+      end
     end
   end
 
