@@ -1,0 +1,35 @@
+AllCops:
+  TargetRubyVersion: 2.3
+  Exclude:
+    - 'db/schema.rb'
+    - 'bin/*'
+
+Layout/EmptyLines:
+  Enabled: false
+
+Style/MethodMissing:
+  Enabled: false
+
+Style/Documentation:
+  Enabled: false
+
+Style/SymbolArray:
+  Enabled: false
+
+Style/TrailingCommaInLiteral:
+  Enabled: false
+
+Style/TrailingCommaInArguments:
+  Enabled: false
+
+Metrics/AbcSize:
+  Max: 25
+
+Metrics/LineLength:
+  Max: 120
+
+Metrics/MethodLength:
+  Max: 20
+
+Metrics/BlockLength:
+  Enabled: false
