@@ -2,18 +2,31 @@
 
 module ClockworkMocks
   class Scheduler
-    def initialize(allow, receive)
+    attr_reader :tasks
+
+    def initialize()
       @tasks = []
+    end
+
+    def self.init_rspec(allow, receive, clock_file = nil)
+      scheduler = Scheduler.new
 
       allow.call(Clockwork).to receive.call(:every) do |interval, name, hash, &block|
-        @tasks.push ClockworkTask.new(interval, name, hash, block)
+        scheduler.every interval, name, hash, &block
       end
 
       if block_given?
         yield
       else
-        load "#{Rails.root}/clock.rb"
+        unless clock_file
+          rails = Object.const_get('Rails')
+          clock_file = "#{rails.root}/clock.rb" if rails
+        end
+
+        load clock_file if clock_file
       end
+
+      scheduler
     end
 
     def work
@@ -28,6 +41,10 @@ module ClockworkMocks
 
     def reset!
       @tasks.each(&:reset!)
+    end
+
+    def every(interval, name, hash = {}, &block)
+      @tasks.push ClockworkTask.new(interval, name, hash, block)
     end
   end
 end

@@ -1,8 +1,8 @@
-# Clockwork::Mocks
+# ClockworkMocks
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/clockwork/mocks`. To experiment with that code, run `bin/console` for an interactive prompt.
-
-TODO: Delete this and the text above, and describe your gem
+[Clockwork](https://github.com/Rykian/clockwork) provides a cron-like utility for ruby.
+This gem provides helpers for integration testing with clockwork.
+It works especially well in combination with [timecop](https://github.com/travisjeffery/timecop).
 
 ## Installation
 
@@ -22,7 +22,82 @@ Or install it yourself as:
 
 ## Usage
 
-TODO: Write usage instructions here
+### Initialization with RSpec
+
+```ruby
+RSpec.describe ... do
+  let!(:clockwork_scheduler) { ClockworkMocks::Scheduler.init_rspec(->(a) { allow a }, ->(a) { receive a }, 'path/to/clock.rb') }
+end
+```
+
+If you do not pass a clock file path to `ClockworkMocks::Scheduler.new` and you are in a rails environment it will assume `"#{Rails.root}/clock.rb"` by default.
+This reloads the `clock.rb` file in every test.
+If you care about that performance leak, there is a more verbose initialization option:
+
+```ruby
+RSpec.describe ... do
+  clockwork_scheduler = nil
+  
+  before do
+    clockwork_scheduler ||= ClockworkMocks::Scheduler.init_rspec(->(a) { allow a }, ->(a) { receive a }, 'path/to/clock.rb')
+    clockwork_scheduler.reset!
+  end
+end
+```
+
+### General Initialization
+
+```ruby
+clockwork_scheduler = ClockworkMocks::Scheduler.new
+
+# ...
+
+clockwork_scheduler.every(1.day, 'some task', at: '23:00') do
+  # something
+end
+```
+
+Using this interface, you can use any stub provider to stub `Clockwork.every` and call `clockwork_scheduler.every` instead, e.g. with rspec-mock:
+
+```ruby
+allow.call(Clockwork).to receive.call(:every) do |interval, name, hash, &block|
+  clockwork_scheduler.every interval, name, hash, &block
+end
+
+load 'path/to/clock.rb'
+```
+
+### Executing clockwork tasks
+
+At any time you can call `clockwork_scheduler.work` to execute all tasks that are due.
+This works especially well in combination with timecop (although the latter is not a requirement):
+
+```ruby
+Timecop.freeze(2.days.from_now) do
+  clockwork_scheduler.work
+end
+```
+
+Tasks will be executed in correct order.
+If enough time passed, tasks will be executed multiple times:
+
+```ruby
+clockwork_scheduler.every(1.second, 'often') { puts 'often' }
+clockwork_scheduler.every(2.seconds, 'not-so-often') { puts 'not so often' }
+
+Timecop.freeze(3.seconds.from_now) do
+  clockwork_scheduler.work
+end
+```
+
+outputs
+
+```
+often
+often
+not-so-often
+often
+```
 
 ## Development
 
@@ -32,7 +107,8 @@ To install this gem onto your local machine, run `bundle exec rake install`. To 
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/[USERNAME]/clockwork-mocks. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [Contributor Covenant](http://contributor-covenant.org) code of conduct.
+Bug reports and pull requests are welcome on GitHub at https://github.com/dpoetzsch/clockwork-mocks.
+This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [Contributor Covenant](http://contributor-covenant.org) code of conduct.
 
 ## License
 
@@ -40,4 +116,4 @@ The gem is available as open source under the terms of the [MIT License](http://
 
 ## Code of Conduct
 
-Everyone interacting in the Clockwork::Mocks project’s codebases, issue trackers, chat rooms and mailing lists is expected to follow the [code of conduct](https://github.com/[USERNAME]/clockwork-mocks/blob/master/CODE_OF_CONDUCT.md).
+Everyone interacting in the ClockworkMocks project’s codebases, issue trackers, chat rooms and mailing lists is expected to follow the [code of conduct](https://github.com/dpoetzsch/clockwork-mocks/blob/master/CODE_OF_CONDUCT.md).
