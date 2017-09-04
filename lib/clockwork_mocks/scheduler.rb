@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module ClockworkMocks
-  class ClockworkFakeScheduler
+  class Scheduler
     def initialize(allow, receive)
       @tasks = []
 
@@ -9,7 +9,11 @@ module ClockworkMocks
         @tasks.push ClockworkTask.new(interval, name, hash, block)
       end
 
-      load "#{Rails.root}/clock.rb"
+      if block_given?
+        yield
+      else
+        load "#{Rails.root}/clock.rb"
+      end
     end
 
     def work

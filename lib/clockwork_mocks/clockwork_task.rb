@@ -5,7 +5,7 @@ module ClockworkMocks
     def initialize(interval, name, hash, block)
       @interval = interval
       @name = name
-      @hash = hash
+      @hash = hash || {}
       @block = block
 
       @due = calc_due
@@ -26,14 +26,14 @@ module ClockworkMocks
     private
 
     def calc_due
-      due = Time.at((due || Time.now).to_f + @interval)
+      ndue = Time.at((due || Time.now).to_f + @interval)
 
-      return due unless @hash[:at]
+      return ndue unless @hash[:at]
 
       at_split = @hash[:at].split(':').map(&:to_i)
-      new_due = due.change(hour: at_split[0], minute: at_split[1])
+      new_due = ndue.change(hour: at_split[0], minute: at_split[1])
 
-      new_due < due ? new_due : (new_due - 1.day)
+      new_due < ndue ? new_due : (new_due - 1.day)
     end
   end
 end
