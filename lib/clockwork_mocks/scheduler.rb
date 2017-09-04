@@ -4,7 +4,7 @@ module ClockworkMocks
   class Scheduler
     attr_reader :tasks
 
-    def initialize()
+    def initialize
       @tasks = []
     end
 
