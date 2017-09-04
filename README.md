@@ -39,7 +39,7 @@ RSpec.describe ... do
   clockwork_scheduler = nil
   
   before do
-    clockwork_scheduler ||= ClockworkMocks::Scheduler.init_rspec(->(a) { allow a }, ->(a) { receive a }, 'path/to/clock.rb')
+    clockwork_scheduler ||= ClockworkMocks::Scheduler.init_rspec(metod(:allow), method(:receive), 'path/to/clock.rb')
     clockwork_scheduler.reset!
   end
 end
