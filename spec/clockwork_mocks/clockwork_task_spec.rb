@@ -80,6 +80,14 @@ RSpec.describe ClockworkMocks::ClockworkTask do
           expect(subject.due).to eq(Time.new(2017, 8, 11, 2, 0))
         end
       end
+
+      context 'at given but exactly the same date' do
+        let(:hash) { { at: '20:00' } }
+
+        it 'schedules the due date for next midnight' do
+          expect(subject.due).to eq(Time.new(2017, 8, 11, 20, 0))
+        end
+      end
     end
   end
 end

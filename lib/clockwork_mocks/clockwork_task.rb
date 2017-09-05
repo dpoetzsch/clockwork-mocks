@@ -37,7 +37,7 @@ module ClockworkMocks
       at_split = @hash[:at].split(':').map(&:to_i)
       new_due = ndue.change(hour: at_split[0], minute: at_split[1])
 
-      new_due < ndue ? new_due : (new_due - 1.day)
+      new_due <= ndue ? new_due : (new_due - 1.day)
     end
   end
 end
