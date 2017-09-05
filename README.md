@@ -133,7 +133,7 @@ often
 
 ### Sidekiq
 
-If you use clockwork to schedule sidekiq jobs but want them to actually execute during integration testing there are two recommendations:
+If you use clockwork to schedule sidekiq jobs but want them to actually execute during integration testing I recommend one of two options:
 
 1. Use sidekiq's inline mode to execute all jobs immediately during integration testing.
    This works well if you don't on scheduled jobs or don't care about the execution date.
