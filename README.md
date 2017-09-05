@@ -4,6 +4,44 @@ This gem provides **helpers for integration testing with clockwork**.
 [Clockwork](https://github.com/Rykian/clockwork) provides a cron-like utility for ruby.
 It works especially well in combination with [timecop](https://github.com/travisjeffery/timecop).
 
+## Example Usecase
+
+Image you have a rails app with a clockwork task scheduled every night to check for inactive users and sends them reminders via email.
+Your `clock.rb` file would look as follows:
+
+```ruby
+module Clockwork
+  every(1.day, 'inactives', at: '00:00') do
+    User.inactive.each do
+      Mailer.reminder_mail.deliver_later
+    end
+  end
+end
+```
+
+By using ClockworkMocks in combination with RSpec and Timecop, you could test this as follows:
+
+```ruby
+RSpec.describe ... do
+  before { ClockworkMocks.reset_rspec(method(:allow), method(:receive)) }
+  let!(:user) { create(:user) }
+
+  context 'after 7 days without action' do
+    before do
+      Timecop.freeze 7.days.from_now
+      ClockworkMocks.work
+    end
+    after { Timecop.return }
+
+    it 'should have sent the user a reminder' do
+      expect(ActionMailer::Base.deliveries).not_to be_empty
+    end
+  end
+end
+```
+
+Note that this does not replace proper unit tests, but gives you the possibility to additionally test your system as a whole.
+
 ## Installation
 
 Add this to your application's Gemfile:
@@ -50,11 +88,11 @@ Using this interface, you can use any stub provider to stub `Clockwork`'s method
 For example with rspec-mock:
 
 ```ruby
-allow.call(Clockwork).to receive.call(:handler) do |&block|
+allow(Clockwork).to receive(:handler) do |&block|
   ClockworkMocks.scheduler.handler(&block)
 end
 
-allow.call(Clockwork).to receive.call(:every) do |interval, name, hash, &block|
+allow(Clockwork).to receive(:every) do |interval, name, hash, &block|
   ClockworkMocks.scheduler.every interval, name, hash, &block
 end
 
