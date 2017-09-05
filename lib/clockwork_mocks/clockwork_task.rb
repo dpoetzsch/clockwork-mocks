@@ -25,7 +25,7 @@ module ClockworkMocks
       @due = calc_due
     end
 
-    attr_reader :due
+    attr_reader :due, :name
 
     private
 

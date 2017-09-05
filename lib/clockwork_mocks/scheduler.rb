@@ -8,15 +8,17 @@ module ClockworkMocks
       @tasks = []
     end
 
-    def self.init_rspec(allow, receive, clock_file = nil)
-      scheduler = Scheduler.new
+    def self.init_rspec(allow, receive, clock_file = nil, &block)
+      Scheduler.new.tap { |s| s.init_rspec(allow, receive, clock_file, &block) }
+    end
 
+    def init_rspec(allow, receive, clock_file = nil)
       allow.call(Clockwork).to receive.call(:handler) do |&block|
-        scheduler.handler(&block)
+        handler(&block)
       end
 
       allow.call(Clockwork).to receive.call(:every) do |interval, name, hash, &block|
-        scheduler.every interval, name, hash, &block
+        every interval, name, hash, &block
       end
 
       if block_given?
@@ -29,8 +31,6 @@ module ClockworkMocks
 
         load clock_file if clock_file
       end
-
-      scheduler
     end
 
     def work

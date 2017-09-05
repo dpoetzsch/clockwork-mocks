@@ -26,42 +26,35 @@ Or install it yourself as:
 
 ```ruby
 RSpec.describe ... do
-  let!(:clockwork_scheduler) { ClockworkMocks::Scheduler.init_rspec(->(a) { allow a }, ->(a) { receive a }, 'path/to/clock.rb') }
+  before(:all) { ClockworkMocks.init_rspec(method(:allow), method(:receive), 'path/to/clock.rb') }
+  before { ClockworkMocks.reset! }
 end
 ```
 
-If you do not pass a clock file path to `ClockworkMocks::Scheduler.new` and you are in a rails environment it will assume `"#{Rails.root}/clock.rb"` by default.
-This reloads the `clock.rb` file in every test.
-If you care about that performance leak, there is a more verbose initialization option:
-
-```ruby
-RSpec.describe ... do
-  clockwork_scheduler = nil
-  
-  before do
-    clockwork_scheduler ||= ClockworkMocks::Scheduler.init_rspec(metod(:allow), method(:receive), 'path/to/clock.rb')
-    clockwork_scheduler.reset!
-  end
-end
-```
+If you do not pass a clock file path to `ClockworkMocks.init_rspec` and you are in a rails environment it will assume `"#{Rails.root}/clock.rb"` by default.
 
 ### General Initialization
 
 ```ruby
-clockwork_scheduler = ClockworkMocks::Scheduler.new
+ClockworkMocks.scheduler.handler do |job, time|
+  # something
+end
 
-# ...
-
-clockwork_scheduler.every(1.day, 'some task', at: '23:00') do
+ClockworkMocks.scheduler.every(1.day, 'some task', at: '23:00') do
   # something
 end
 ```
 
-Using this interface, you can use any stub provider to stub `Clockwork.every` and call `clockwork_scheduler.every` instead, e.g. with rspec-mock:
+Using this interface, you can use any stub provider to stub `Clockwork`'s methods and call `ClockworkMocks.scheduler`'s methods instead.
+For example with rspec-mock:
 
 ```ruby
+allow.call(Clockwork).to receive.call(:handler) do |&block|
+  ClockworkMocks.scheduler.handler(&block)
+end
+
 allow.call(Clockwork).to receive.call(:every) do |interval, name, hash, &block|
-  clockwork_scheduler.every interval, name, hash, &block
+  ClockworkMocks.scheduler.every interval, name, hash, &block
 end
 
 load 'path/to/clock.rb'
@@ -69,12 +62,12 @@ load 'path/to/clock.rb'
 
 ### Executing clockwork tasks
 
-At any time you can call `clockwork_scheduler.work` to execute all tasks that are due.
+At any time you can call `ClockworkMocks.work` to execute all tasks that are due.
 This works especially well in combination with timecop (although the latter is not a requirement):
 
 ```ruby
 Timecop.freeze(2.days.from_now) do
-  clockwork_scheduler.work
+  ClockworkMocks.work
 end
 ```
 
@@ -82,11 +75,11 @@ Tasks will be executed in correct order.
 If enough time passed, tasks will be executed multiple times:
 
 ```ruby
-clockwork_scheduler.every(1.second, 'often') { puts 'often' }
-clockwork_scheduler.every(2.seconds, 'not-so-often') { puts 'not so often' }
+ClockworkMocks.scheduler.every(1.second, 'often') { puts 'often' }
+ClockworkMocks.scheduler.every(2.seconds, 'not-so-often') { puts 'not so often' }
 
 Timecop.freeze(3.seconds.from_now) do
-  clockwork_scheduler.work
+  ClockworkMocks.work
 end
 ```
 
@@ -95,7 +88,7 @@ outputs
 ```
 often
 often
-not-so-often
+not so often
 often
 ```
 
