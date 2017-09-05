@@ -131,6 +131,16 @@ not so often
 often
 ```
 
+### Sidekiq
+
+If you use clockwork to schedule sidekiq jobs but want them to actually execute during integration testing there are two recommendations:
+
+1. Use sidekiq's inline mode to execute all jobs immediately during integration testing.
+   This works well if you don't on scheduled jobs or don't care about the execution date.
+2. Use a library like [sidekiq-fake-scheduler](https://github.com/dpoetzsch/sidekiq-fake-scheduler).
+   This is superior to inline mode in that it respects the dates when the jobs are scheduled so you can test your application more fine-grained.
+   The proposed gem neatly integrates with clockwork-mocks.
+
 ## Development
 
 After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake spec` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
