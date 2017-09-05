@@ -140,6 +140,7 @@ If you use clockwork to schedule sidekiq jobs but want them to actually execute 
 2. Use a library like [sidekiq-fake-scheduler](https://github.com/dpoetzsch/sidekiq-fake-scheduler).
    This is superior to inline mode in that it respects the dates when the jobs are scheduled so you can test your application more fine-grained.
    The proposed gem neatly integrates with clockwork-mocks.
+   Disclaimer: I am the creator and maintainer of sidekiq-fake-scheduler.
 
 ## Development
 
