@@ -6,7 +6,7 @@ It works especially well in combination with [timecop](https://github.com/travis
 
 ## Installation
 
-Add this line to your application's Gemfile:
+Add this to your application's Gemfile:
 
 ```ruby
 group :test do
