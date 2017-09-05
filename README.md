@@ -26,8 +26,7 @@ Or install it yourself as:
 
 ```ruby
 RSpec.describe ... do
-  before(:all) { ClockworkMocks.init_rspec(method(:allow), method(:receive), 'path/to/clock.rb') }
-  before { ClockworkMocks.reset! }
+  before { ClockworkMocks.reset_rspec(method(:allow), method(:receive), 'path/to/clock.rb') }
 end
 ```
 
