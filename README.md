@@ -9,7 +9,9 @@ It works especially well in combination with [timecop](https://github.com/travis
 Add this line to your application's Gemfile:
 
 ```ruby
-gem 'clockwork-mocks'
+group :test do
+  gem 'clockwork-mocks'
+end
 ```
 
 And then execute:
