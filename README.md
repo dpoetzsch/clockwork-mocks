@@ -131,6 +131,10 @@ not so often
 often
 ```
 
+**Note:**
+Tasks will always be executed in time zone UTC.
+This prevents weird corner cases during switches of daylight savings time.
+
 ### Sidekiq
 
 If you use clockwork to schedule sidekiq jobs but want them to actually execute during integration testing I recommend one of two options:
