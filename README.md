@@ -131,10 +131,6 @@ not so often
 often
 ```
 
-**Note:**
-Tasks will always be executed in time zone UTC.
-This prevents weird corner cases during switches of daylight savings time.
-
 ### Sidekiq
 
 If you use clockwork to schedule sidekiq jobs but want them to actually execute during integration testing I recommend one of two options:
@@ -161,6 +157,11 @@ This project is intended to be a safe, welcoming space for collaboration, and co
 
 - [x] Basic support for tasks with block
 - [x] Support for `Clockwork.handler`
+- [ ] Handle [:at parsing](https://github.com/Rykian/clockwork#at) correctly
+- [ ] Handle [configuration](https://github.com/Rykian/clockwork#configuration)
+- [ ] Handle [time zones](https://github.com/Rykian/clockwork#tz) correctly (currently execution is always timed by UTC)
+- [ ] Handle [:if parameter](https://github.com/Rykian/clockwork#if)
+- [ ] Handle [:skip_first_run parameter](https://github.com/Rykian/clockwork#skip_first_run)
 
 ## License
 
