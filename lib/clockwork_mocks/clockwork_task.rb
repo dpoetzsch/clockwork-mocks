@@ -12,7 +12,7 @@ module ClockworkMocks
     end
 
     def reset!
-      @due = Time.now
+      @due = Time.now.utc
       @due = calc_due
     end
 
@@ -20,7 +20,7 @@ module ClockworkMocks
       if @block
         @block.call
       elsif handler
-        handler.call(@name, Time.now)
+        handler.call(@name, Time.now.utc)
       end
       @due = calc_due
     end
@@ -30,7 +30,7 @@ module ClockworkMocks
     private
 
     def calc_due
-      ndue = Time.at((due || Time.now).to_f + @interval)
+      ndue = Time.at((due || Time.now.utc).to_f + @interval).utc
 
       return ndue unless @hash[:at]
 

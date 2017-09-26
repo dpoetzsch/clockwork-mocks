@@ -7,7 +7,8 @@ RSpec.describe ClockworkMocks::ClockworkTask do
   let(:name) { 'some name' }
   let(:hash) { {} }
   let(:block) { instance_double(Proc) }
-  before { Timecop.freeze(2017, 8, 10, 20, 0) }
+  let(:now) { Time.utc(2017, 8, 10, 20, 0) }
+  before { Timecop.freeze now }
   after { Timecop.return }
   subject { described_class.new(interval, name, hash, block) }
   before { allow(block).to receive(:call) }
@@ -69,7 +70,7 @@ RSpec.describe ClockworkMocks::ClockworkTask do
         let(:hash) { { at: '23:00' } }
 
         it 'schedules the due date for today' do
-          expect(subject.due).to eq(Time.new(2017, 8, 10, 23, 0))
+          expect(subject.due).to eq(Time.utc(2017, 8, 10, 23, 0))
         end
       end
 
@@ -77,15 +78,15 @@ RSpec.describe ClockworkMocks::ClockworkTask do
         let(:hash) { { at: '02:00' } }
 
         it 'schedules the due date for tomorrow' do
-          expect(subject.due).to eq(Time.new(2017, 8, 11, 2, 0))
+          expect(subject.due).to eq(Time.utc(2017, 8, 11, 2, 0))
         end
       end
 
       context 'at given but exactly the same date' do
         let(:hash) { { at: '20:00' } }
 
-        it 'schedules the due date for next midnight' do
-          expect(subject.due).to eq(Time.new(2017, 8, 11, 20, 0))
+        it 'schedules the due date for tomorrow' do
+          expect(subject.due).to eq(Time.utc(2017, 8, 11, 20, 0))
         end
       end
     end
